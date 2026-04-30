@@ -7,3 +7,7 @@ output "s3_bucket_name" {
   description = "S3 bucket for lakehouse"
   value       = aws_s3_bucket.lakehouse.bucket
 }
+
+output "vpc_id" {
+  value = aws_vpc.main.id
+}
