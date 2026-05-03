@@ -2,17 +2,23 @@
 
 ## What is this?
 
-This is a **data engineering** project. Data engineering sits between your backend (the app, the database) and the people who need to analyze that data (analysts, dashboards, ML models). The job is to move data reliably, transform it into something useful, and make sure it's always fresh and queryable.
+Data engineering is the plumbing of any data-driven company — moving 
+data from where it lives (databases, apps) to where it's useful 
+(dashboards, analysts, ML models).
 
-You see this kind of system at any company with real data needs — Amazon tracking every order and click, Swiggy understanding drop-off in the checkout funnel, Zepto knowing which SKUs are flying off shelves. The tools differ, the pattern is the same: get data out of the database → clean it → serve it for analysis.
+You see this exact pattern at Swiggy tracking order drop-offs, Zepto 
+watching which SKUs move fastest, or Amazon connecting clicks to 
+purchases. Different scale, same idea.
 
-This project simulates that entire pipeline using AWS-native services on an e-commerce dataset (users, orders, clickstream events).
+This project builds that **full pipeline on AWS** — from a live PostgreSQL 
+database and a clickstream event stream, all the way to QuickSight 
+dashboards — using the same services a mid-size company would actually use.
 
 ---
 
 ## Architecture
 
-> *(diagram coming — will be added here)*
+![Architecture Overiview](screenshots/architecture_overview.png)
 
 ---
 
@@ -27,7 +33,6 @@ This project simulates that entire pipeline using AWS-native services on an e-co
 | **AWS Glue (PySpark)** | Three ETL jobs that transform raw S3 data into clean, queryable Iceberg tables. See [Glue Jobs](#glue-jobs) below. |
 | **Apache Iceberg** | Table format on top of S3. Gives you UPDATE, DELETE, time-travel queries, and ACID guarantees — things plain Parquet files can't do. |
 | **Athena** | Serverless SQL directly over the Iceberg tables. Used to create views for revenue, churn, and conversion funnel. |
-| **Redshift Spectrum** | Lets Redshift query S3/Iceberg tables without loading data in. Used for BI workloads and materialized views. |
 | **QuickSight** | Dashboards connected to Athena — daily revenue, conversion funnel by referrer, user churn KPIs. |
 | **Step Functions** | Orchestrates the three Glue jobs in the right order. If any job fails, the pipeline stops and logs the failure. |
 | **Glue Data Quality** | Ruleset on `fact_orders` — checks completeness, uniqueness, row count. Failures publish to CloudWatch. |
@@ -104,17 +109,9 @@ All three Glue jobs succeed. Iceberg tables are created and populated.
 ### Fact Table
 ![Glue job runs — fact orders](screenshots/12_enriched_fact.png)
 
-<!-- ### Clickstream files landing in S3
-![users_scd2 Iceberg table](screenshots/12_users_scd2.png)
-
-### Clickstream files landing in S3
-![sessions Iceberg table](screenshots/13_sessions.png)
-
-### Clickstream files landing in S3
-![fact_orders Iceberg table](screenshots/14_fact_orders.png) -->
 
 ## Phase 5 — Analytics (Athena + Redshift + QuickSight)
-Three Athena views created and queried. Redshift Spectrum reads the Iceberg tables. QuickSight dashboards published.
+Three Athena views created and queried. QuickSight dashboards published.
 
 ### Daily Revenue View - Athena Query
 ![Athena view 1 — daily revenue](screenshots/13_athena_daily_revenue.png)
