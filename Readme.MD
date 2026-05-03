@@ -26,7 +26,7 @@ dashboards — using the same services a mid-size company would actually use.
 
 | Service | What it does in this project |
 |---|---|
-| **Terraform** | Provisions all AWS infrastructure as code — VPC, RDS, S3, IAM roles. One `terraform apply`, everything is up. |
+| **Terraform** | Provisions core infrastructure — VPC, subnets, RDS, S3 bucket, IAM roles. |
 | **RDS (PostgreSQL)** | The source-of-truth database. Holds users and orders tables, like any e-commerce backend would. |
 | **AWS DMS** | Watches the Postgres write-ahead log and ships every INSERT / UPDATE / DELETE to S3 as CSV files. No polling, no cron — it reacts to changes as they happen. |
 | **Kinesis + Firehose** | Handles clickstream events (views, clicks, add-to-carts, purchases). Events are streamed in real time, Firehose buffers them and lands GZIP files in S3 every 60 seconds. |
@@ -60,7 +60,8 @@ Reads CDC orders, deduplicates by keeping the latest version per `order_id`, fil
 Screenshots follow the data as it moves through the pipeline.
 
 ## Phase 0 — Infrastructure
-Terraform provisions everything. RDS is up, S3 bucket created, outputs show the endpoint.
+Terraform provisions the core infrastructure — VPC, subnets, RDS instance, 
+S3 bucket, and IAM roles. Remaining services were configured via AWS console.
 
 ### Terraform apply complete
 ![Terraform apply complete](screenshots/01_terraform_apply.png)
